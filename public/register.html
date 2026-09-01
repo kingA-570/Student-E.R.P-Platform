@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student ERP - Register</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Create Account</h1>
+      <p class="subtitle">Join the Student ERP platform</p>
+
+      <div id="alert" class="alert alert-error" style="display:none;"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="you@university.edu">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Min 6 characters" minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" required>
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+          </select>
+        </div>
+        <div class="form-group" id="studentIdGroup">
+          <label for="studentId">Student ID</label>
+          <input type="text" id="studentId" placeholder="STU2024001">
+        </div>
+        <div class="form-group">
+          <label for="department">Department</label>
+          <input type="text" id="department" placeholder="Computer Science">
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="/">Sign In</a></p>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.getElementById('role').addEventListener('change', (e) => {
+      document.getElementById('studentIdGroup').style.display =
+        e.target.value === 'student' ? 'block' : 'none';
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alert = document.getElementById('alert');
+      alert.style.display = 'none';
+
+      const role = document.getElementById('role').value;
+      const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        role,
+        department: document.getElementById('department').value
+      };
+      if (role === 'student') {
+        data.studentId = document.getElementById('studentId').value;
+      }
+
+      try {
+        const result = await api.register(data);
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        api.token = result.token;
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        alert.textContent = err.message;
+        alert.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

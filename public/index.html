@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student ERP - Login</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Student ERP</h1>
+      <p class="subtitle">Manage fees, schedules & academic records</p>
+
+      <div id="alert" class="alert alert-error" style="display:none;"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="you@university.edu">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+      </form>
+
+      <p class="auth-switch">Don't have an account? <a href="/register.html">Register</a></p>
+
+      <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Demo Accounts:</p>
+        <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.8;">
+          <div><strong>Student:</strong> student@erp.edu / student123</div>
+          <div><strong>Faculty:</strong> faculty@erp.edu / faculty123</div>
+          <div><strong>Admin:</strong> admin@erp.edu / admin123</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (localStorage.getItem('token')) {
+      window.location.href = '/dashboard.html';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alert = document.getElementById('alert');
+      alert.style.display = 'none';
+
+      try {
+        const data = await api.login(
+          document.getElementById('email').value,
+          document.getElementById('password').value
+        );
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        api.token = data.token;
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        alert.textContent = err.message;
+        alert.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
